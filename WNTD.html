@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WNTD</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+
+:root{
+  --bg:#0c0c0c;
+  --white:#f5f5f5;
+  --black:#0c0c0c;
+  --accent:#f0ff00;
+  --accent-dim:rgba(240,255,0,0.08);
+  --border:#2a2a2a;
+  --muted:#444;
+  --muted2:#222;
+  --red:#ff2244;
+  --card:#141414;
+}
+
+body{
+  background:var(--bg);
+  color:var(--white);
+  font-family:'Space Grotesk',sans-serif;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ─── SCREENS ─── */
+.screen{display:none;}
+.screen.active{display:block;}
+
+/* ══════════════════════════
+   SETUP SCREEN
+══════════════════════════ */
+#setupScreen{
+  min-height:100vh;
+  padding:0;
+  display:none;
+  flex-direction:column;
+}
+#setupScreen.active{display:flex;}
+
+.setup-top{
+  padding:52px 24px 0;
+  flex:1;
+}
+
+.wntd-wordmark{
+  font-family:'Space Mono',monospace;
+  font-size:13px;
+  font-weight:700;
+  letter-spacing:0.22em;
+  color:var(--accent);
+  margin-bottom:48px;
+  display:block;
+}
+
+.setup-headline{
+  font-size:42px;
+  font-weight:700;
+  line-height:1.0;
+  letter-spacing:-0.03em;
+  margin-bottom:6px;
+  color:var(--white);
+}
+
+.setup-headline em{
+  font-style:normal;
+  color:var(--accent);
+  font-family:'Space Mono',monospace;
+}
+
+.setup-sub{
+  font-size:14px;
+  color:var(--muted);
+  margin-bottom:44px;
+  line-height:1.6;
+  font-weight:400;
+}
+
+.field-group{
+  margin-bottom:16px;
+}
+
+.field-label{
+  font-family:'Space Mono',monospace;
+  font-size:9px;
+  font-weight:700;
+  letter-spacing:0.2em;
+  text-transform:uppercase;
+  color:var(--muted);
+  display:block;
+  margin-bottom:8px;
+}
+
+.field-input{
+  width:100%;
+  background:var(--muted2);
+  border:2px solid var(--border);
+  border-radius:0;
+  padding:16px 18px;
+  color:var(--white);
+  font-family:'Space Grotesk',sans-serif;
+  font-size:16px;
+  font-weight:500;
+  outline:none;
+  transition:border-color 0.15s, background 0.15s;
+  -webkit-appearance:none;
+}
+
+.field-input:focus{
+  border-color:var(--accent);
+  background:#1a1a1a;
+}
+
+.field-input::placeholder{color:var(--muted);}
+
+/* Photo upload */
+.photo-zone{
+  width:100%;
+  aspect-ratio:3/2;
+  background:var(--muted2);
+  border:2px dashed var(--border);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  transition:border-color 0.2s;
+  position:relative;
+  overflow:hidden;
+}
+
+.photo-zone:active{border-color:var(--accent);}
+
+.photo-zone img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:none;
+}
+
+.photo-zone img.visible{display:block;}
+
+.photo-zone-inner{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:10px;
+  z-index:1;
+  pointer-events:none;
+}
+
+.photo-icon-big{font-size:32px;opacity:0.3;}
+
+.photo-hint-text{
+  font-family:'Space Mono',monospace;
+  font-size:10px;
+  letter-spacing:0.12em;
+  color:var(--muted);
+  text-transform:uppercase;
+}
+
+.photo-change-overlay{
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,0.6);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  opacity:0;
+  transition:opacity 0.2s;
+  z-index:2;
+}
+
+.photo-zone:hover .photo-change-overlay,
+.photo-zone:active .photo-change-overlay{opacity:1;}
+
+.photo-change-overlay span{
+  font-family:'Space Mono',monospace;
+  font-size:10px;
+  letter-spacing:0.15em;
+  color:#fff;
+  text-transform:uppercase;
+}
+
+input[type=file]{display:none;}
+
+.setup-bottom{
+  padding:24px;
+}
+
+.setup-cta{
+  width:100%;
+  background:var(--accent);
+  color:#000;
+  border:none;
+  padding:20px;
+  font-family:'Space Grotesk',sans-serif;
+  font-size:16px;
+  font-weight:700;
+  letter-spacing:0.02em;
+  cursor:pointer;
+  transition:opacity 0.15s, transform 0.1s;
+  border-radius:0;
+}
+
+.setup-cta:active{transform:scale(0.98);opacity:0.9;}
+
+/* ══════════════════════════
+   TRACKER SCREEN
+══════════════════════════ */
+#trackerScreen{min-height:100vh;}
+
+/* ── Hero ── */
+.hero{
+  position:relative;
+  width:100%;
+  height:260px;
+  background:var(--muted2);
+  overflow:hidden;
+}
+
+.hero-img{
+  width:100%;height:100%;
+  object-fit:cover;
+  display:none;
+}
+.hero-img.on{display:block;}
+
+.hero-placeholder{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:64px;opacity:0.06;
+}
+
+.hero-gradient{
+  position:absolute;inset:0;
+  background:linear-gradient(to top, #0c0c0c 0%, rgba(12,12,12,0.2) 55%, transparent 100%);
+}
+
+.hero-wordmark{
+  position:absolute;
+  top:20px;left:20px;
+  font-family:'Space Mono',monospace;
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:0.22em;
+  color:var(--accent);
+}
+
+.hero-edit-btn{
+  position:absolute;
+  top:16px;right:16px;
+  background:rgba(12,12,12,0.7);
+  border:1px solid rgba(255,255,255,0.1);
+  color:rgba(255,255,255,0.5);
+  font-family:'Space Mono',monospace;
+  font-size:9px;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  padding:7px 12px;
+  cursor:pointer;
+  backdrop-filter:blur(12px);
+  transition:color 0.2s;
+}
+.hero-edit-btn:hover{color:#fff;}
+
+.hero-content{
+  position:absolute;
+  bottom:22px;left:20px;right:20px;
+}
+
+.hero-name{
+  font-family:'Space Mono',monospace;
+  font-size:10px;
+  letter-spacing:0.15em;
+  color:rgba(255,255,255,0.4);
+  text-transform:uppercase;
+  margin-bottom:4px;
+}
+
+.hero-goal{
+  font-size:28px;
+  font-weight:700;
+  letter-spacing:-0.02em;
+  line-height:1.1;
+}
+
+/* ── Body ── */
+.body{
+  padding:0 0 80px;
+}
+
+/* ── Big number block ── */
+.big-number-block{
+  padding:28px 20px 0;
+  border-bottom:1px solid var(--border);
+  padding-bottom:28px;
+}
+
+.bn-label{
+  font-family:'Space Mono',monospace;
+  font-size:9px;
+  letter-spacing:0.2em;
+  color:var(--muted);
+  text-transform:uppercase;
+  margin-bottom:10px;
+}
+
+.bn-row{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+}
+
+.bn-value{
+  font-family:'Space Mono',monospace;
+  font-size:38px;
+  font-weight:700;
+  letter-spacing:-0.03em;
+  line-height:1;
+  color:var(--white);
+}
+
+.bn-pct{
+  font-family:'Space Mono',monospace;
+  font-size:13px;
+  font-weight:700;
+  color:var(--black);
+  background:var(--accent);
+  padding:6px 12px;
+  letter-spacing:0.04em;
+}
+
+/* ── Progress ── */
+.progress-block{
+  padding:20px 20px 0;
+}
+
+.track{
+  height:3px;
+  background:var(--border);
+  position:relative;
+  margin-bottom:10px;
+}
+
+.fill{
+  position:absolute;
+  top:0;left:0;
+  height:100%;
+  background:var(--accent);
+  transition:width 0.8s cubic-bezier(0.22,1,0.36,1);
+  width:0%;
+}
+
+.ms-row{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:24px;
+}
+
+.ms-item{
+  font-family:'Space Mono',monospace;
+  font-size:9px;
+  letter-spacing:0.06em;
+  color:var(--muted);
+  transition:color 0.3s;
+}
+.ms-item.hit{color:var(--accent);}
+
+/* ── Stats grid ── */
+.stats-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  margin:0 0 2px;
+}
+
+.stat-cell{
+  padding:18px 14px;
+  border-right:1px solid var(--border);
+  position:relative;
+}
+.stat-cell:last-child{border-right:none;}
+
+.stat-v{
+  font-family:'Space Mono',monospace;
+  font-size:13px;
+  font-weight:700;
+  color:var(--white);
+  margin-bottom:5px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.stat-l{
+  font-family:'Space Mono',monospace;
+  font-size:8px;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+
+/* ── Goal bar ── */
+.goal-bar{
+  margin:2px 0 2px;
+  padding:16px 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:var(--accent-dim);
+  border-left:3px solid var(--accent);
+}
+
+.goal-bar-label{
+  font-family:'Space Mono',monospace;
+  font-size:9px;
+  letter-spacing:0.15em;
+  text-transform:uppercase;
+  color:rgba(240,255,0,0.5);
+}
+
+.goal-bar-value{
+  font-family:'Space Mono',monospace;
+  font-size:14px;
+  font-weight:700;
+  color:var(--accent);
+}
+
+/* ── Input block ── */
+.input-block{
+  padding:20px 20px 0;
+}
+
+.input-row{
+  display:flex;
+  gap:0;
+  margin-bottom:12px;
+  border:2px solid var(--border);
+}
+
+.money-input{
+  flex:1;
+  background:transparent;
+  border:none;
+  padding:16px 16px;
+  color:var(--white);
+  font-family:'Space Mono',monospace;
+  font-size:16px;
+  font-weight:700;
+  outline:none;
+  min-width:0;
+}
+
+.money-input::placeholder{
+  color:var(--muted);
+  font-weight:400;
+}
+
+.money-input:focus ~ .add-block,
+.input-row:focus-within{
+  border-color:var(--accent);
+}
+
+.add-block{
+  background:var(--accent);
+  color:#000;
+  border:none;
+  padding:16px 20px;
+  font-family:'Space Grotesk',sans-serif;
+  font-size:14px;
+  font-weight:700;
+  cursor:pointer;
+  transition:opacity 0.15s;
+  white-space:nowrap;
+  flex-shrink:0;
+}
+
+.add-block:active{opacity:0.8;}
+
+.quick-btns{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+  margin-bottom:0;
+}
+
+.qb{
+  background:transparent;
+  border:1px solid var(--border);
+  color:var(--muted);
+  padding:8px 14px;
+  font-family:'Space Mono',monospace;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:0.06em;
+  cursor:pointer;
+  transition:all 0.15s;
+}
+
+.qb:hover,.qb:active{
+  border-color:var(--accent);
+  color:var(--accent);
+  background:var(--accent-dim);
+}
+
+/* ── History ── */
+.hist-block{
+  padding:28px 20px 0;
+}
+
+.hist-hdr{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:16px;
+}
+
+.hist-title{
+  font-family:'Space Mono',monospace;
+  font-size:9px;
+  letter-spacing:0.2em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+
+.clr-btn{
+  font-family:'Space Mono',monospace;
+  font-size:9px;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:var(--muted);
+  background:none;
+  border:none;
+  cursor:pointer;
+  transition:color 0.2s;
+}
+.clr-btn:hover{color:var(--red);}
+
+.hist-list{
+  display:flex;
+  flex-direction:column;
+  max-height:280px;
+  overflow-y:auto;
+}
+
+.hist-list::-webkit-scrollbar{width:2px;}
+.hist-list::-webkit-scrollbar-thumb{background:var(--border);}
+
+.hist-item{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px 0;
+  border-bottom:1px solid var(--border);
+  animation:fadeUp 0.2s ease;
+}
+
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(-4px);}
+  to{opacity:1;transform:translateY(0);}
+}
+
+.hist-item:last-child{border-bottom:none;}
+
+.hist-amt{
+  font-family:'Space Mono',monospace;
+  font-size:15px;
+  font-weight:700;
+  color:var(--accent);
+}
+
+.hist-right{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.hist-date{
+  font-family:'Space Mono',monospace;
+  font-size:10px;
+  color:var(--muted);
+}
+
+.del-btn{
+  background:none;
+  border:none;
+  color:var(--muted);
+  font-size:18px;
+  line-height:1;
+  cursor:pointer;
+  padding:2px 4px;
+  transition:color 0.15s;
+}
+.del-btn:hover{color:var(--red);}
+
+.hist-empty{
+  padding:32px 0;
+  font-family:'Space Mono',monospace;
+  font-size:10px;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:var(--muted);
+  text-align:center;
+}
+
+/* ── Toast ── */
+.toast{
+  position:fixed;
+  bottom:32px;
+  left:50%;
+  transform:translateX(-50%) translateY(100px);
+  background:var(--accent);
+  color:#000;
+  font-family:'Space Mono',monospace;
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  padding:13px 24px;
+  transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  white-space:nowrap;
+  z-index:999;
+  pointer-events:none;
+}
+.toast.show{transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<!-- ══ SETUP ══ -->
+<div class="screen" id="setupScreen">
+  <div class="setup-top">
+    <span class="wntd-wordmark">WNTD</span>
+
+    <div class="setup-headline">What do<br>you <em>want?</em></div>
+    <div class="setup-sub">Set your goal. Track your progress.<br>Get what you want.</div>
+
+    <div class="field-group">
+      <label class="field-label">Your name</label>
+      <input class="field-input" id="setupName" type="text" placeholder="e.g. Alex" maxlength="30" autocomplete="off"/>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">What do you want?</label>
+      <input class="field-input" id="setupGoalName" type="text" placeholder="e.g. BMW M5, MacBook Pro…" maxlength="40" autocomplete="off"/>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Goal amount</label>
+      <input class="field-input" id="setupGoalAmount" type="number" placeholder="30000000" min="1" inputmode="numeric"/>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Currency</label>
+      <select class="field-input" id="setupCurrency">
+        <option value="₽">₽ Russian Ruble</option>
+        <option value="$">$ US Dollar</option>
+        <option value="€">€ Euro</option>
+        <option value="£">£ British Pound</option>
+      </select>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Timeline (days)</label>
+      <input class="field-input" id="setupDays" type="number" placeholder="90" min="1" value="90" inputmode="numeric"/>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Goal photo (optional)</label>
+      <div class="photo-zone" id="photoZone" onclick="document.getElementById('photoFile').click()">
+        <img id="photoPreview" src="" alt=""/>
+        <div class="photo-zone-inner" id="photoInner">
+          <div class="photo-icon-big">⬜</div>
+          <div class="photo-hint-text">Tap to upload</div>
+        </div>
+        <div class="photo-change-overlay"><span>Change photo</span></div>
+      </div>
+      <input type="file" id="photoFile" accept="image/*" onchange="handlePhoto(event)"/>
+    </div>
+  </div>
+
+  <div class="setup-bottom">
+    <button class="setup-cta" onclick="startTracker()">START SAVING →</button>
+  </div>
+</div>
+
+<!-- ══ TRACKER ══ -->
+<div class="screen" id="trackerScreen">
+
+  <div class="hero">
+    <img class="hero-img" id="heroImg" src="" alt=""/>
+    <div class="hero-placeholder" id="heroPlaceholder">✦</div>
+    <div class="hero-gradient"></div>
+    <div class="hero-wordmark">WNTD</div>
+    <button class="hero-edit-btn" onclick="goSetup()">EDIT</button>
+    <div class="hero-content">
+      <div class="hero-name" id="heroName">HEY, —</div>
+      <div class="hero-goal" id="heroGoal">Your goal</div>
+    </div>
+  </div>
+
+  <div class="body">
+
+    <!-- Big number -->
+    <div class="big-number-block">
+      <div class="bn-label">Saved so far</div>
+      <div class="bn-row">
+        <div class="bn-value" id="bnValue">0</div>
+        <div class="bn-pct" id="bnPct">0.0%</div>
+      </div>
+    </div>
+
+    <!-- Progress -->
+    <div class="progress-block">
+      <div class="track"><div class="fill" id="fillBar"></div></div>
+      <div class="ms-row">
+        <span class="ms-item" id="ms25">25%</span>
+        <span class="ms-item" id="ms50">50%</span>
+        <span class="ms-item" id="ms75">75%</span>
+        <span class="ms-item" id="ms100">100%</span>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-cell">
+        <div class="stat-v" id="stRemain">—</div>
+        <div class="stat-l">Remaining</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-v" id="stDays">—</div>
+        <div class="stat-l">Days left</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-v" id="stDaily">—</div>
+        <div class="stat-l">Per day</div>
+      </div>
+    </div>
+
+    <!-- Goal bar -->
+    <div class="goal-bar">
+      <div class="goal-bar-label">Target</div>
+      <div class="goal-bar-value" id="goalBarVal">—</div>
+    </div>
+
+    <!-- Input -->
+    <div class="input-block">
+      <div class="input-row">
+        <input
+          class="money-input"
+          id="moneyInput"
+          type="text"
+          placeholder="&amount or just type"
+          autocomplete="off"
+          inputmode="numeric"
+        />
+        <button class="add-block" onclick="handleAdd()">ADD +</button>
+      </div>
+      <div class="quick-btns">
+        <button class="qb" onclick="quickAdd(100)">100</button>
+        <button class="qb" onclick="quickAdd(500)">500</button>
+        <button class="qb" onclick="quickAdd(1000)">1K</button>
+        <button class="qb" onclick="quickAdd(5000)">5K</button>
+        <button class="qb" onclick="quickAdd(10000)">10K</button>
+        <button class="qb" onclick="quickAdd(50000)">50K</button>
+        <button class="qb" onclick="quickAdd(100000)">100K</button>
+      </div>
+    </div>
+
+    <!-- History -->
+    <div class="hist-block">
+      <div class="hist-hdr">
+        <div class="hist-title">History</div>
+        <button class="clr-btn" onclick="clearAll()">Clear all</button>
+      </div>
+      <div class="hist-list" id="histList">
+        <div class="hist-empty">No entries yet</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+const KEY = 'wntd_v1';
+
+let state = {
+  name:'', goalName:'', goalAmount:0,
+  currency:'$', days:90,
+  photo:'', entries:[],
+  startDate:Date.now(), setup:false
+};
+
+function loadState(){
+  try{
+    const r = localStorage.getItem(KEY);
+    if(r) state = {...state,...JSON.parse(r)};
+  }catch(e){}
+}
+
+function saveState(){ localStorage.setItem(KEY, JSON.stringify(state)); }
+
+/* ─── Photo ─── */
+let photoData = '';
+
+function handlePhoto(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    photoData = ev.target.result;
+    document.getElementById('photoPreview').src = photoData;
+    document.getElementById('photoPreview').classList.add('visible');
+    document.getElementById('photoInner').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+/* ─── Setup → Tracker ─── */
+function startTracker(){
+  const name = document.getElementById('setupName').value.trim();
+  const goalName = document.getElementById('setupGoalName').value.trim();
+  const goalAmount = parseFloat(document.getElementById('setupGoalAmount').value);
+  const currency = document.getElementById('setupCurrency').value;
+  const days = parseInt(document.getElementById('setupDays').value)||90;
+
+  if(!name){ showToast('Enter your name'); return; }
+  if(!goalName){ showToast('Enter your goal'); return; }
+  if(!goalAmount||goalAmount<=0){ showToast('Enter goal amount'); return; }
+
+  const isEdit = state.setup;
+  state.name = name;
+  state.goalName = goalName;
+  state.goalAmount = goalAmount;
+  state.currency = currency;
+  state.days = days;
+  if(photoData) state.photo = photoData;
+  if(!isEdit){ state.startDate = Date.now(); state.entries = []; }
+  state.setup = true;
+
+  saveState();
+  showTracker();
+}
+
+function goSetup(){
+  document.getElementById('setupName').value = state.name;
+  document.getElementById('setupGoalName').value = state.goalName;
+  document.getElementById('setupGoalAmount').value = state.goalAmount;
+  document.getElementById('setupCurrency').value = state.currency;
+  document.getElementById('setupDays').value = state.days;
+  if(state.photo){
+    photoData = state.photo;
+    document.getElementById('photoPreview').src = state.photo;
+    document.getElementById('photoPreview').classList.add('visible');
+    document.getElementById('photoInner').style.display = 'none';
+  }
+  document.getElementById('setupScreen').classList.add('active');
+  document.getElementById('trackerScreen').classList.remove('active');
+}
+
+function showTracker(){
+  document.getElementById('setupScreen').classList.remove('active');
+  document.getElementById('trackerScreen').classList.add('active');
+  render();
+}
+
+/* ─── Render ─── */
+function fmtShort(n, cur){
+  if(n>=1000000) return (n/1000000).toFixed(1).replace('.0','')+' M';
+  if(n>=1000) return (n/1000).toFixed(0)+' K';
+  return Math.round(n).toLocaleString('en-US');
+}
+
+function fmtFull(n){
+  return Math.round(n).toLocaleString('en-US');
+}
+
+function render(){
+  const cur = state.currency || '$';
+  const total = state.entries.reduce((s,e)=>s+e.amount,0);
+  const goal = state.goalAmount;
+  const pct = Math.min(100,(total/goal)*100);
+  const remain = Math.max(0,goal-total);
+
+  // Hero
+  document.getElementById('heroName').textContent = 'HEY, ' + state.name.toUpperCase();
+  document.getElementById('heroGoal').textContent = state.goalName;
+
+  const hImg = document.getElementById('heroImg');
+  if(state.photo){
+    hImg.src = state.photo;
+    hImg.classList.add('on');
+    document.getElementById('heroPlaceholder').style.display='none';
+  } else {
+    hImg.classList.remove('on');
+    document.getElementById('heroPlaceholder').style.display='flex';
+  }
+
+  // Big number
+  document.getElementById('bnValue').textContent = cur + fmtFull(total);
+  document.getElementById('bnPct').textContent = pct.toFixed(1)+'%';
+
+  // Fill
+  document.getElementById('fillBar').style.width = pct+'%';
+
+  // Milestones
+  [25,50,75,100].forEach(m=>{
+    document.getElementById('ms'+m).classList.toggle('hit', pct>=m);
+  });
+
+  // Goal bar
+  document.getElementById('goalBarVal').textContent = cur + fmtFull(goal);
+
+  // Stats
+  const endMs = state.startDate + state.days*86400000;
+  const daysLeft = Math.max(0, Math.ceil((endMs - Date.now())/86400000));
+  const daily = daysLeft>0 ? remain/daysLeft : 0;
+
+  document.getElementById('stRemain').textContent = cur + fmtShort(remain);
+  document.getElementById('stDays').textContent = daysLeft;
+  document.getElementById('stDaily').textContent = cur + fmtShort(daily);
+
+  // History
+  const list = document.getElementById('histList');
+  if(!state.entries.length){
+    list.innerHTML = '<div class="hist-empty">No entries yet</div>';
+    return;
+  }
+
+  const sorted = [...state.entries].reverse();
+  list.innerHTML = sorted.map((e,i)=>{
+    const ri = state.entries.length-1-i;
+    const d = new Date(e.date);
+    const ds = d.toLocaleDateString('en-US',{month:'short',day:'numeric'}) +
+               ' · ' + d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:false});
+    return `<div class="hist-item">
+      <div class="hist-amt">+${cur}${fmtFull(e.amount)}</div>
+      <div class="hist-right">
+        <span class="hist-date">${ds}</span>
+        <button class="del-btn" onclick="delEntry(${ri})">×</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ─── Add ─── */
+function parseAmt(raw){
+  let s = raw.trim().replace(/^&/,'').replace(/[$€£₽\s]/g,'').replace(/,/g,'.');
+  s = s.replace(/k$/i,'000').replace(/m$/i,'000000');
+  const n = parseFloat(s);
+  return isNaN(n)?null:n;
+}
+
+function addAmount(n){
+  if(!n||n<=0){ showToast('Enter a valid amount'); return; }
+  state.entries.push({amount:n, date:Date.now()});
+  saveState();
+  render();
+  const total = state.entries.reduce((s,e)=>s+e.amount,0);
+  if(total >= state.goalAmount){
+    showToast('🎯 GOAL REACHED!');
+  } else {
+    showToast('+' + (state.currency||'$') + fmtFull(n) + ' ADDED');
+  }
+}
+
+function handleAdd(){
+  const f = document.getElementById('moneyInput');
+  const v = parseAmt(f.value);
+  if(!v){ showToast('Format: &1000 or just 1000'); return; }
+  addAmount(v);
+  f.value=''; f.focus();
+}
+
+function quickAdd(n){ addAmount(n); }
+
+function delEntry(idx){
+  state.entries.splice(idx,1);
+  saveState(); render();
+  showToast('ENTRY REMOVED');
+}
+
+function clearAll(){
+  if(!confirm('Clear all history?')) return;
+  state.entries=[];
+  saveState(); render();
+  showToast('HISTORY CLEARED');
+}
+
+/* ─── Enter ─── */
+document.getElementById('moneyInput').addEventListener('keydown',e=>{
+  if(e.key==='Enter') handleAdd();
+});
+
+/* ─── Toast ─── */
+let tt;
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(tt);
+  tt = setTimeout(()=>t.classList.remove('show'), 2400);
+}
+
+/* ─── Init ─── */
+loadState();
+if(state.setup) showTracker();
+else {
+  document.getElementById('setupScreen').classList.add('active');
+}
+</script>
+</body>
+</html>
